@@ -1,6 +1,6 @@
 Package: mcgibbsit
 Title: Warnes and Raftery's MCGibbsit MCMC diagnostic
-Version: 1.0.1
+Version: 1.0.2
 Author: Gregory R. Warnes <gregory_r_warnes@groton.pfizer.com>
 Description:
   mcgibbsit provides an implementation of Warnes & Raftery's MCGibbsit
@@ -11,4 +11,4 @@ Description:
 Maintainer: Gregory R. Warnes <gregory_r_warnes@groton.pfizer.com>
 License: GPL
 Depends: coda
-Packaged: Tue Aug  3 10:51:59 2004; warneg
+Packaged: Wed Dec  8 15:14:29 2004; warneg
