@@ -1,0 +1,28 @@
+2004-08-03 10:50  warnes
+
+	* DESCRIPTION: [no log message]
+
+2004-08-03 10:25  warnes
+
+	* man/mcgibbsit.Rd: Spelling and grammer corrections
+
+2004-08-03 10:25  warnes
+
+	* R/mcgibbsit.R: Updated for new version of CODA.
+
+2003-08-20 01:45  warnes
+
+	* R/read.mcmc.R, man/read.mcmc.Rd:
+	  - Updated to fix syntax problem
+
+2003-08-20 01:17  warnes
+
+	* DESCRIPTION, R/mcgibbsit.R, R/read.mcmc.R, R/zzz.R,
+	  man/mcgibbsit.Rd, man/read.mcmc.Rd: - Initial checkin of
+	  mcgibbsit R package
+
+2003-08-20 01:17  warnes
+
+	* DESCRIPTION, R/mcgibbsit.R, R/read.mcmc.R, R/zzz.R,
+	  man/mcgibbsit.Rd, man/read.mcmc.Rd: Initial revision
+
