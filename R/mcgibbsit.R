@@ -1,66 +1,4 @@
-### File version $Id: mcgibbsit.R,v 1.2 2004/08/03 14:25:06 warnes Exp $
-
-# Revision History
-# $Log: mcgibbsit.R,v $
-# Revision 1.2  2004/08/03 14:25:06  warnes
-# Updated for new version of CODA.
-#
-# Revision 1.1.1.1  2003/08/20 05:17:54  warnes
-# - Initial checkin of mcgibbsit R package
-#
-#
-# Revision 2.0  2000/11/07 01:47:56  warnes
-#
-# Files as presented in thesis.
-#
-# Revision 1.5  2000/09/30 02:10:49  warnes
-# Better late than never.
-#
-# Revision 1.4  2000/07/20 17:30:04  warnes
-#
-# Cleaned up the code.  Added some additional documentation and comments.
-#
-# Revision 1.3  2000/07/20 07:29:21  warnes
-#
-# 1) Changed computation of the thining factor (kthin) to use common 1st
-#    order and 2nd order models across chains.
-#
-# 2) Corrected correlation inflation factor
-#
-# 3) Previous versions gave N = (burn in + estimation length) as N.  In
-#    fact, N = estimation length.  Added a new column to output table for
-#    total (N+M) and corrected the output of the $N$ column.
-#
-# 4) Added a note to output of print.mcgibbsit that the number of
-#    iterations reported are overall rather than per-chain.
-#
-# Revision 1.2  2000/07/20 05:38:44  warnes
-#
-# Made change to use MLE for rho (  mean of cov / mean of var )
-#
-# Revision 1.1.1.1  2000/07/18 13:53:27  warnes
-#
-# Initial Checkin.  Moved old dissertation files to CVS directory "dissertation-orig".
-#
-#
-# Revision 1.2  2000/07/15 21:25:37  warnes
-#
-# 1) Corrected burn in ("nburn") to be inflated by the number of chains.
-#
-# 2) Instead of turning any "NA" obtained from trying to take the
-#    correlation of two discretized sequences where one never changes, use
-#    the mean of the correlations which we can successfully estimate.
-#    The first method was over-conservative.
-#
-# 3) Corrected the computation of the run-length inflation due to serial
-#    correlation ("I").  It was including the inflation due to
-#    between-chain correlation.  (The actual computed run-length was
-#    correct.)
-#
-# 4) Corrected the computation of the inflation due to between-chain correlation.
-#    (The actual run length was correct.)
-#
-
+### File version $Id: mcgibbsit.R,v 1.3 2005/03/13 01:46:42 warnes Exp $
 
 "mcgibbsit" <- function (data, q = 0.025, r = 0.0125, s = 0.95,
                          converge.eps = 0.001, correct.cor=TRUE )
@@ -129,7 +67,7 @@
       {
         dichot <- list()
 
-        if (is.matrix(data[[i]]))
+        if (is.matrix(data[[1]]))
           {
             quant <- quantile(combined[, i, drop = TRUE], probs = q)
 
