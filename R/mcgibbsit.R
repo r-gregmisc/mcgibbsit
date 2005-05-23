@@ -1,4 +1,4 @@
-### File version $Id: mcgibbsit.R,v 1.3 2005/03/13 01:46:42 warnes Exp $
+### File version $Id: mcgibbsit.R,v 1.4 2005/03/15 03:19:21 r_burrows Exp $
 
 "mcgibbsit" <- function (data, q = 0.025, r = 0.0125, s = 0.95,
                          converge.eps = 0.001, correct.cor=TRUE )
@@ -247,7 +247,7 @@
                  rep('', ncol(out)),
                  out,
                  rep('-----', ncol(out) ),
-                 c(maxM, maxN, maxM+maxN, "", "", "", "")
+                 c(maxM, maxN, maxM+maxN, "", "", "")
                  )
 
 

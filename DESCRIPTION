@@ -1,7 +1,7 @@
 Package: mcgibbsit
 Title: Warnes and Raftery's MCGibbsit MCMC diagnostic
-Version: 1.0.3
-Date: 2005-03-12
+Version: 1.0.5
+Date: 2005-05-23
 Author: Gregory R. Warnes <Gregory.R.Warnes@Pfizer.com>
 Depends: coda
 Description:
@@ -12,4 +12,4 @@ Description:
   of Gelman and Rubin.
 Maintainer: Gregory R. Warnes <Gregory.R.Warnes@Pfizer.com>
 License: GPL
-Packaged: Sat Mar 12 21:07:44 2005; warneg
+Packaged: Thu Jun 16 17:38:47 2005; warneg

@@ -5,8 +5,10 @@
   Read in data from a set of MCMC runs and create an  \code{mcmc.list} object.
 }
 \usage{
-read.mcmc( nc, sourcepattern, ..., col.names,  start = 1, end =
-           nrow(tmp), thin = 1)
+read.mcmc( nc, sourcepattern, ...,
+               col.names, start = 1, 
+               end = nrow(tmp)/numComponents*thin, 
+               thin = 1, numComponents=1)
 }
 \arguments{
   \item{nc}{Number of MCMC sampler files to read}
@@ -15,6 +17,7 @@ read.mcmc( nc, sourcepattern, ..., col.names,  start = 1, end =
     MCMC sampler data.}
   \item{col.names}{Data file column names (optional)}
   \item{start, end, thin}{See documentation for \code{mcmc}}
+  \item{numComponents}{Number of component samplers.}
 }
 \details{
   This function reads in the states output from one or more MCMC
