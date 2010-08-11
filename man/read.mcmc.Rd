@@ -40,17 +40,30 @@ read.mcmc( nc, sourcepattern, ...,
 \seealso{
   \code{\link[coda]{mcmc}},
   \code{\link[coda]{mcmc.list}},
-  \code{\link[base]{read.table}}
+  \code{\link[utils]{read.table}}
 }
+
 \examples{
-# this is a totally useless example, but it does exercise the code
+
+## Create set of 20 example data files
+set.seed(12234)
 for(i in 1:20){
   x <- matrix(rnorm(1000),ncol=4)
   x[,4] <- x[,4] + 1/3 * (x[,1] + x[,2] + x[,3])
   colnames(x) <- c("alpha","beta","gamma", "nu")
-  write.table(x, file=paste("mcmc",i,"csv",sep="."), sep=",")
+  write.csv(x, file=paste("mcmc",i,"csv",sep="."), row.names=FALSE)
 }
 
-data <- read.mcmc(20, "mcmc.\#.csv", sep=",")
+## Read the 20 data files and convert them into a single
+## MCMC object.
+data <- read.mcmc(20, "mcmc.#.csv", sep=",")
+
+## Clean up after ourselves
+unlink( paste("mcmc.",1:20,".csv", sep="") )
+
+## Now run mcgibbsit...
+mcgibbsit(data)
+
 }
+
 \keyword{file}

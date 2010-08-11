@@ -1,4 +1,4 @@
-### File version $Id: mcgibbsit.R,v 1.4 2005/03/15 03:19:21 r_burrows Exp $
+### File version $Id: mcgibbsit.R 55 2005-03-15 03:19:21Z r_burrows $
 
 "mcgibbsit" <- function (data, q = 0.025, r = 0.0125, s = 0.95,
                          converge.eps = 0.001, correct.cor=TRUE )
