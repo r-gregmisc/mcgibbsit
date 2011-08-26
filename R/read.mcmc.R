@@ -7,11 +7,11 @@ read.mcmc <- function (nc, sourcepattern, ..., col.names,
     for (i in 1:nc)
       {
         filename <- sub("#", as.character(i), sourcepattern)
-        colnames <- scan(filename, nlines=1, what="", quiet=TRUE, ...)
-        tmp <- scan(file=filename, skip=1, what=1, quiet=TRUE, ...)
-        tmp<-matrix(tmp, ncol=length(colnames), byrow=TRUE)
+        ncols <- scan(file=filename, nlines=1, what="", quiet=TRUE, ...)
+        tmp   <- scan(file=filename, skip=1,   what=1,  quiet=TRUE, ...)
+        tmp <- matrix(tmp, ncol=length(ncols), byrow=TRUE)
         if (missing(col.names))
-          colnames(tmp) <- colnames
+          colnames(tmp) <- rep("", length(ncols))
         else
           colnames(tmp) <- col.names
         for (j in 1:numComponents)

@@ -1,0 +1,11 @@
+d41d8cd98f00b204e9800998ecf8427e *ChangeLog
+29ff49ffbbac8116073b3fb19754cd7f *DESCRIPTION
+caed02481a78fc4c8465c3aede13f67d *NAMESPACE
+564ed571b3c5aba7bd4a2ba718e09bfd *NEWS
+40d3cb92ec3af3a6cf3befc05d620a63 *R/mcgibbsit.R
+466a08a543bd614cffde1c5412b24270 *R/read.mcmc.R
+88d8f05db557a03132699803a3795510 *R/zzz.R
+d41d8cd98f00b204e9800998ecf8427e *inst/ChangeLog
+564ed571b3c5aba7bd4a2ba718e09bfd *inst/NEWS
+98a9e3c730c73032fbf051487c459be4 *man/mcgibbsit.Rd
+fbb1edcf9702cced052774290285a8b1 *man/read.mcmc.Rd

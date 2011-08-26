@@ -109,7 +109,7 @@ mcgibbsit(data, q=0.025, r=0.0125, s=0.95, converge.eps=0.001,
   S. Richardson, eds.). London, U.K.: Chapman and Hall.
 
 }
-\author{Gregory R. Warnes \email{gregory\_r\_warnes@groton.pfizer.com}
+\author{Gregory R. Warnes \email{greg@warnes.net}
     based on the the R function \code{raftery.diag} which is part of the
     'CODA' library.  \code{raftery.diag}, in turn, is based on the
     FORTRAN program `gibbsit' written by Steven Lewis which is available
@@ -119,8 +119,7 @@ mcgibbsit(data, q=0.025, r=0.0125, s=0.95, converge.eps=0.001,
 
 \examples{
 
-## Create set of 20 example data files
-set.seed(12234)
+# this is a totally useless example, but it does exercise the code
 for(i in 1:20){
   x <- matrix(rnorm(1000),ncol=4)
   x[,4] <- x[,4] + 1/3 * (x[,1] + x[,2] + x[,3])
@@ -128,14 +127,8 @@ for(i in 1:20){
   write.csv(x, file=paste("mcmc",i,"csv",sep="."), row.names=FALSE)
 }
 
-## Read the 20 data files and convert them into a single
-## MCMC object.
 data <- read.mcmc(20, "mcmc.#.csv", sep=",")
 
-## Clean up after ourselves
-unlink( paste("mcmc.",1:20,".csv", sep="") )
-
-## Now run mcgibbsit...
 mcgibbsit(data)
 
 }

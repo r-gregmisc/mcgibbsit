@@ -36,34 +36,35 @@ read.mcmc( nc, sourcepattern, ...,
 \value{
   An mcmc.list object containing \code{nc} component \code{mcmc} objects.
 }
-\author{Gregory R. Warnes \email{gregory\_r\_warnes@groton.pfizer.com}}
+\author{Gregory R. Warnes \email{greg@warnes.net}}
 \seealso{
   \code{\link[coda]{mcmc}},
   \code{\link[coda]{mcmc.list}},
   \code{\link[utils]{read.table}}
 }
-
 \examples{
 
-## Create set of 20 example data files
-set.seed(12234)
+# this is a totally useless example, but it does exercise the code
 for(i in 1:20){
   x <- matrix(rnorm(1000),ncol=4)
   x[,4] <- x[,4] + 1/3 * (x[,1] + x[,2] + x[,3])
   colnames(x) <- c("alpha","beta","gamma", "nu")
-  write.csv(x, file=paste("mcmc",i,"csv",sep="."), row.names=FALSE)
+  write.table(x, file=paste("mcmc",i,"csv",sep="."), sep=",",
+                 row.names=FALSE)
 }
 
-## Read the 20 data files and convert them into a single
-## MCMC object.
 data <- read.mcmc(20, "mcmc.#.csv", sep=",")
 
-## Clean up after ourselves
-unlink( paste("mcmc.",1:20,".csv", sep="") )
+# a pedantic example
+write.table(cbind(rnorm(700,10,2),rnorm(700,3,1),rnorm(700,8,1),
+      rnorm(700,11,2)),file="dnzcY3e.1",row.names=FALSE)
+write.table(cbind(rnorm(700,10,2),rnorm(700,3,1),rnorm(700,8,1),
+      rnorm(700,11,2)),file="dnzcY3e.2",row.names=FALSE)
+write.table(cbind(rnorm(700,10,2),rnorm(700,3,1),rnorm(700,8,1),
+      rnorm(700,11,2)),file="dnzcY3e.3",row.names=FALSE)
 
-## Now run mcgibbsit...
-mcgibbsit(data)
+output<-read.mcmc(3,"dnzcY3e.#") 
+mcgibbsit(output)
 
 }
-
 \keyword{file}
