@@ -92,12 +92,13 @@ mcgibbsit(data, q=0.025, r=0.0125, s=0.95, converge.eps=0.001,
 \references{
 
   Warnes, G.W. (2004). The Normal Kernel Coupler: An adaptive MCMC
-  method for efficiently sampling from multi-modal distributions (web
-  site), \url{http://www.analytics.washington.edu/Zope/projects/MCMC/NKC/index.html}.
+  method for efficiently sampling from multi-modal distributions,
+  \url{https://digital.lib.washington.edu/researchworks/handle/1773/9541}
   
   Warnes, G.W. (2000).  Multi-Chain and Parallel Algorithms for Markov
   Chain Monte Carlo. Dissertation, Department of Biostatistics,
   University of Washington,
+  \url{https://www.stat.washington.edu/research/reports/2001/tr395.pdf}
 
   Raftery, A.E. and Lewis, S.M. (1992).  One long run with diagnostics:
   Implementation strategies for Markov chain Monte Carlo. Statistical
@@ -113,7 +114,8 @@ mcgibbsit(data, q=0.025, r=0.0125, s=0.95, converge.eps=0.001,
     based on the the R function \code{raftery.diag} which is part of the
     'CODA' library.  \code{raftery.diag}, in turn, is based on the
     FORTRAN program `gibbsit' written by Steven Lewis which is available
-    from the Statlib archive.  }
+    from the Statlib archive.
+  }
 
 \seealso{ \code{\link{read.mcmc}} }
 
