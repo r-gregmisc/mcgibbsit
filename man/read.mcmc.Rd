@@ -31,7 +31,7 @@ sampler data.}
 }
 \value{
 An mcmc.list object containing \code{nc} component \code{mcmc}
-objects.
+  objects.
 }
 \description{
 Read in data from a set of MCMC runs and create an \code{mcmc.list} object.
@@ -51,34 +51,40 @@ annotate the MCMC samplers with additional information.
 }
 \examples{
 
+###
+# Create example data files for 20 independent chains
+# with serial correlation of 0.
+###
 
-# this is a totally useless example, but it does exercise the code
+set.seed(42)
+tmpdir <- tempdir()
+
 for(i in 1:20){
-  x <- matrix(rnorm(1000),ncol=4)
+  x <- matrix(rnorm(1000), ncol=4)
+  
   x[,4] <- x[,4] + 1/3 * (x[,1] + x[,2] + x[,3])
+  
   colnames(x) <- c("alpha","beta","gamma", "nu")
-  write.table(x, file=paste("mcmc",i,"csv",sep="."), sep=",",
-                 row.names=FALSE)
+  
+  write.table(
+    x,
+    file = file.path(
+      tmpdir,
+      paste("mcmc", i, "csv", sep=".")
+      ),
+    sep = ",",
+    row.names=FALSE
+  )
 }
 
-data <- read.mcmc(20, "mcmc.#.csv", sep=",")
+# Read them back in as an mcmc.list object
+data <- read.mcmc(20, file.path(tmpdir, "mcmc.#.csv"), sep=",")
 
-# a pedantic example
-write.table(cbind(rnorm(700,10,2),rnorm(700,3,1),rnorm(700,8,1),
-      rnorm(700,11,2)),file="dnzcY3e.1",row.names=FALSE)
-write.table(cbind(rnorm(700,10,2),rnorm(700,3,1),rnorm(700,8,1),
-      rnorm(700,11,2)),file="dnzcY3e.2",row.names=FALSE)
-write.table(cbind(rnorm(700,10,2),rnorm(700,3,1),rnorm(700,8,1),
-      rnorm(700,11,2)),file="dnzcY3e.3",row.names=FALSE)
-
-output<-read.mcmc(3,"dnzcY3e.#") 
-mcgibbsit(output)
-
-
+summary(data)
 }
 \seealso{
 \code{\link[coda]{mcmc}}, \code{\link[coda]{mcmc.list}},
-\code{\link[utils]{read.table}}
+  \code{\link[utils]{read.table}}
 }
 \author{
 Gregory R. Warnes \email{greg@warnes.net}

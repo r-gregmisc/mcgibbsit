@@ -29,6 +29,13 @@ mcgibbsit(
 
 \item{correct.cor}{should the between-chain correlation correction (R) be
 computed and applied.  Set to false for independent MCMC chains.}
+
+\item{x}{an object used to select a method.}
+
+\item{digits}{minimal number of \emph{significant} digits, see
+    \code{\link[base]{print.default}}.}
+
+\item{...}{further arguments passed to or from other methods.}
 }
 \value{
 An \code{mcgibbsit} object with components
@@ -91,16 +98,55 @@ r=0.005}.
 }
 \examples{
 
-# this is a totally useless example, but it does exercise the code
+###
+# Create example data files for 20 independent chains
+# with serial correlation of 0.25
+###
+
+set.seed(42)
+tmpdir <- tempdir()
+
+nsamples <- 1000
+
 for(i in 1:20){
-  x <- matrix(rnorm(1000),ncol=4)
-  x[,4] <- x[,4] + 1/3 * (x[,1] + x[,2] + x[,3])
+  x <- matrix(nrow = nsamples+1, ncol=4)
   colnames(x) <- c("alpha","beta","gamma", "nu")
-  write.csv(x, file=paste("mcmc",i,"csv",sep="."), row.names=FALSE)
+  
+  x[,"alpha"] <- rnorm (nsamples+1, mean=0.025, sd=0.0025)^2
+  x[,"beta"]  <- rnorm (nsamples+1, mean=53,    sd=12)
+  x[,"gamma"] <- rbinom(nsamples+1, 20,         p=0.25) + 1
+  x[,"nu"]    <- rnorm (nsamples+1, mean=x[,"alpha"] * x[,"beta"], sd=1/x[,"gamma"])
+
+  # induce serial correlation of 0.25
+  x <- 0.75 * x[2:(nsamples+1),] + 0.25 * x[1:nsamples,]
+  
+  
+  write.table(
+    x,
+    file = file.path(
+      tmpdir,
+      paste("mcmc", i, "csv", sep=".")
+      ),
+    sep = ",",
+    row.names = FALSE
+  )
 }
 
-data <- read.mcmc(20, "mcmc.#.csv", sep=",")
+# Read them back in as an mcmc.list object
+data <- read.mcmc(
+  20, 
+  file.path(tmpdir, "mcmc.#.csv"), 
+  sep=",",
+  col.names=c("alpha","beta","gamma", "nu")
+  )
 
+# Summary statistics
+summary(data)
+
+# Trace and Density Plots
+ plot(data)
+
+# And check the necessary run length 
 mcgibbsit(data)
 
 
