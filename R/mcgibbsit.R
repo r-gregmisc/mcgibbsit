@@ -1,5 +1,130 @@
-### File version $Id: mcgibbsit.R 55 2005-03-15 03:19:21Z r_burrows $
-
+#' Warnes and Raftery's MCGibbsit MCMC diagnostic
+#' 
+#' mcgibbsit provides an implementation of Warnes & Raftery's MCGibbsit
+#' run-length diagnostic for a set of (not-necessarily independent) MCMC
+#' samplers.  It combines the estimate error-bounding approach of Raftery and
+#' Lewis with the between chain variance verses within chain variance approach
+#' of Gelman and Rubin.
+#' 
+#' 
+#' \code{mcgibbsit} computes the minimum run length \eqn{N_{min}}{Nmin},
+#' required burn in \eqn{M}, total run length \eqn{N}, run length inflation due
+#' to \emph{auto-correlation}, \eqn{I}, and the run length inflation due to
+#' \emph{between-chain} correlation, \eqn{R} for a set of exchangeable MCMC
+#' simulations which need not be independent.
+#' 
+#' The normal usage is to perform an initial MCMC run of some pre-determined
+#' length (e.g., 300 iterations) for each of a set of \eqn{k} (e.g.,
+#' \eqn{k=20}) MCMC samplers.  The output from these samplers is then read in
+#' to create an \code{mcmc.list} object and \code{mcgibbsit} is run specifying
+#' the desired accuracy of estimation for quantiles of interest.  This will
+#' return the minimum number of iterations to achieve the specified error
+#' bound.  The set of MCMC samplers is now run so that the total number of
+#' iterations exceeds this minimum, and \code{mcgibbsit} is again called.  This
+#' should continue until the number of iterations already complete is less than
+#' the minimum number computed by \code{mcgibbsit}.
+#' 
+#' If the initial number of iterations in \code{data} is too small to perform
+#' the calculations, an error message is printed indicating the minimum pilot
+#' run length.
+#' 
+#' The parameters \code{q}, \code{r}, \code{s}, \code{converge.eps}, and
+#' \code{correct.cor} can be supplied as vectors.  This will cause
+#' \code{mcgibbsit} to produce a list of results, with one element produced for
+#' each set of values.  I.e., setting \code{q=(0.025,0.975), r=(0.0125,0.005)}
+#' will yield a list containing two \code{mcgibbsit} objects, one computed with
+#' parameters \code{q=0.025, r=0.0125}, and the other with \code{q=0.975,
+#' r=0.005}.
+#' 
+#' @aliases mcgibbsit print.mcgibbsit
+#'
+#' @param data an `mcmc' object.
+#' @param q quantile(s) to be estimated.
+#' @param r the desired margin of error of the estimate.
+#' @param s the probability of obtaining an estimate in the interval
+#' @param converge.eps Precision required for estimate of time to convergence.
+#' @param correct.cor should the between-chain correlation correction (R) be
+#' computed and applied.  Set to false for independent MCMC chains.
+#'
+#' @return An \code{mcgibbsit} object with components
+#' 
+#' \item{call}{parameters used to call 'mcgibbsit'} \item{params}{values of r,
+#' s, and q used} \item{resmatrix}{a matrix with 6 columns: \describe{
+#' \item{Nmin}{The minimum required sample size for a chain with no correlation
+#' between consecutive samples. Positive autocorrelation will increase the
+#' required sample size above this minimum value.} \item{M}{The number of `burn
+#' in' iterations to be discarded (total over all chains).} \item{N}{The number
+#' of iterations after burn in required to estimate the quantile q to within an
+#' accuracy of +/- r with probability p (total over all chains).}
+#' \item{Total}{Overall number of iterations required (M + N).} \item{I}{An
+#' estimate (the `dependence factor') of the extent to which auto-correlation
+#' inflates the required sample size.  Values of `I' larger than 5 indicate
+#' strong autocorrelation which may be due to a poor choice of starting value,
+#' high posterior correlations, or `stickiness' of the MCMC algorithm.}
+#' \item{R}{An estimate of the extent to which between-chain correlation
+#' inflates the required sample size.  Large values of 'R' indicate that there
+#' is significant correlation between the chains and may be indicative of a
+#' lack of convergence or a poor multi-chain algorithm.} } } \item{nchains}{the
+#' number of MCMC chains in the data} \item{len}{the length of each chain}
+#'
+#' @author Gregory R. Warnes \email{greg@@warnes.net} based on the the R
+#' function \code{raftery.diag} which is part of the 'CODA' library.
+#' \code{raftery.diag}, in turn, is based on the FORTRAN program `gibbsit'
+#' written by Steven Lewis which is available from the Statlib archive.
+#'
+#' @seealso \code{\link{read.mcmc}}
+#'
+#' @references
+#' 
+#' Warnes, G.W. (2004). The Normal Kernel Coupler: An adaptive MCMC method for
+#' efficiently sampling from multi-modal distributions,
+#' \url{https://digital.lib.washington.edu/researchworks/handle/1773/9541}
+#' 
+#' Warnes, G.W. (2000).  Multi-Chain and Parallel Algorithms for Markov Chain
+#' Monte Carlo. Dissertation, Department of Biostatistics, University of
+#' Washington,
+#' \url{https://www.stat.washington.edu/research/reports/2001/tr395.pdf}
+#' 
+#' Raftery, A.E. and Lewis, S.M. (1992).  One long run with diagnostics:
+#' Implementation strategies for Markov chain Monte Carlo. Statistical Science,
+#' 7, 493-497.
+#' 
+#' Raftery, A.E. and Lewis, S.M. (1995).  The number of iterations, convergence
+#' diagnostics and generic Metropolis algorithms.  In Practical Markov Chain
+#' Monte Carlo (W.R. Gilks, D.J. Spiegelhalter and S. Richardson, eds.).
+#' London, U.K.: Chapman and Hall.
+#' 
+#' @keywords models
+#' 
+#' @importFrom coda, mcmc
+#' @importFrom coda, mcmc.list
+#' @importFrom coda, niter
+#' @importFrom coda, nvar
+#' @importFrom coda, thin
+#' @importFrom coda, varnames
+#' @importFrom stats, end
+#' @importFrom stats, qnorm
+#' @importFrom stats, quantile
+#' @importFrom stats, start
+#' @importFrom stats, var
+#' @importFrom stats, window
+#'
+#' @examples
+#' 
+#' # this is a totally useless example, but it does exercise the code
+#' for(i in 1:20){
+#'   x <- matrix(rnorm(1000),ncol=4)
+#'   x[,4] <- x[,4] + 1/3 * (x[,1] + x[,2] + x[,3])
+#'   colnames(x) <- c("alpha","beta","gamma", "nu")
+#'   write.csv(x, file=paste("mcmc",i,"csv",sep="."), row.names=FALSE)
+#' }
+#' 
+#' data <- read.mcmc(20, "mcmc.#.csv", sep=",")
+#' 
+#' mcgibbsit(data)
+#' 
+#' 
+#' @export
 "mcgibbsit" <- function (data, q = 0.025, r = 0.0125, s = 0.95,
                          converge.eps = 0.001, correct.cor=TRUE )
 {
@@ -210,6 +335,8 @@
   return(y)
 }
 
+#' @export
+#' @rdname mcgibbsit
 "print.mcgibbsit" <-
   function (x, digits = 3, ...)
 {

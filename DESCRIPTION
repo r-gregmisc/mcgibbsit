@@ -17,3 +17,5 @@ Packaged: 2013-10-23 23:56:39 UTC; warnes
 NeedsCompilation: no
 Repository: CRAN
 Date/Publication: 2013-10-24 08:40:58
+RoxygenNote: 7.2.3
+Encoding: UTF-8
