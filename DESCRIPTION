@@ -1,7 +1,7 @@
 Package: mcgibbsit
 Title: Warnes and Raftery's MCGibbsit MCMC diagnostic
-Version: 1.1.0
-Date: 2012-10-23
+Version: 1.2.0
+Date: 2023-09-23
 Author: Gregory R. Warnes <greg@warnes.net>, Robert Burrows
 Depends: coda
 Description: 
