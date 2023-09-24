@@ -417,8 +417,10 @@
       out <- x$resmatrix
       for (i in ncol(out)) out[, i] <- format(out[, i], digits = digits)
       
-      maxM <- max(x$resmatrix[,1])
-      maxN <- max(x$resmatrix[,2])
+      maxM     <- max(x$resmatrix[,"M"])
+      maxN     <- max(x$resmatrix[,"N"])
+      maxTotal <- max(x$resmatrix[,"Total"])
+      minBound <- max(x$resmatrix[,"Nmin"])
       
       out <- rbind(c("Burn-in ", "Estimation", "Total", "Lower bound ",
                      "Auto-Corr.", "Between-Chain"),
@@ -427,7 +429,7 @@
                    rep('', ncol(out)),
                    out,
                    rep('-----', ncol(out) ),
-                   c(maxM, maxN, maxM+maxN, "", "", "")
+                   c(maxM, maxN, maxTotal, minBound, "", "")
       )
       
       

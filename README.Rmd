@@ -48,14 +48,13 @@ remotes::install_github('r-gregmisc/mcgibbsit')
 
 ## Example
 
-This basic example constructs a dummy set of files for 20 MCMC runs from an *imaginary* MCMC sampler and shows the results of running `mcgibbsit` with the default settings, which calculate the total number of samples needed to provide accurate 95% posterior confidence region estimates for all four of the parameters.  
+This basic example constructs a dummy set of files from an *imaginary* MCMC sampler and shows the results of running `mcgibbsit` with the default settings.
 
 ```{r}
 library(mcgibbsit)
 
 ###
 # Create example data files for 20 independent chains
-# with serial correlation of 0.25
 ###
 
 set.seed(42)
@@ -69,20 +68,24 @@ gen_samples <- function(run_id)
   x <- matrix(nrow = nsamples+1, ncol=4)
   colnames(x) <- c("alpha","beta","gamma", "nu")
   
-  x[,"alpha"] <- rnorm (nsamples+1, mean=0.025, sd=0.0025)^2
-  x[,"beta"]  <- rnorm (nsamples+1, mean=53,    sd=12)
-  x[,"gamma"] <- rbinom(nsamples+1, 20,         p=0.25) + 1
+  x[,"alpha"] <- exp(rnorm (nsamples+1, mean=0.025, sd=0.025))
+  x[,"beta"]  <- rnorm (nsamples+1, mean=53,    sd=14)
+  x[,"gamma"] <- rbinom(nsamples+1, 20,         p=0.15) + 1
   x[,"nu"]    <- rnorm (nsamples+1, mean=x[,"alpha"] * x[,"beta"], sd=1/x[,"gamma"])
 #'
   # induce serial correlation of 0.25
   x <- 0.75 * x[2:(nsamples+1),] + 0.25 * x[1:nsamples,]
-  
-  
+
+  # induce ~50% acceptance rate
+  accept <- runif(nsamples) > 0.50
+  for(i in 2:nsamples)
+    if(!accept[i]) x[i,] <- x[i-1,]
+
   write.table(
     x,
     file = file.path(
       tmpdir,
-      paste("mcmc", i, "csv", sep=".")
+      paste("mcmc", run_id, "csv", sep=".")
       ),
     sep = ",",
     row.names = FALSE
@@ -110,7 +113,7 @@ mcmc.3 <- read.mcmc(
 plot(mcmc.3)
 ```
 
-Now run `mcgibbsit` to determine the necessary number of MCMC samples:
+Now run `mcgibbsit` to determine the necessary total number of MCMC samples to to provide accurate 95% posterior confidence region estimates for all four of the parameters:
 ```{r}
 # And check the necessary run length 
 mcg.3 <- mcgibbsit(mcmc.3)
@@ -119,32 +122,38 @@ print(mcg.3)
 
 **Interpretation**: `mcgibbsit` estimated that a total of required number of samples is `r nformat(max(mcg.3$resmatrix[,"Total"]))`, which is less than we've generated so far.
 
-Just to be safe we'll add 3 more runs for a total of 6 runs, each of length 200, for a total of 1,200 samples
-
+Just to be safe we'll add 7 more runs, each of length 200, for a total of  2,000 samples:
 
 ```{r}
-# Generate and load 3 runs 
-for(i in 4:6)
+# Generate and load 7 more runs 
+for(i in 3 + (1:7))
   gen_samples(i)
   
-mcmc.6 <- read.mcmc(
-  6, 
+mcmc.10 <- read.mcmc(
+  10, 
   file.path(tmpdir, "mcmc.#.csv"), 
   sep=",",
   col.names=c("alpha","beta","gamma", "nu")
   )
 ```
 
-```{r trace_density_plot_6,fig.width=8,fig.height=8}
+```{r trace_density_plot_10,fig.width=8,fig.height=8}
 # Trace and Density Plots
-plot(mcmc.6)
+plot(mcmc.10)
 ```
 
 Now run `mcgibbsit` to determine the necessary number of MCMC samples:
 ```{r}
 # And check the necessary run length 
-mcg.6 <- mcgibbsit(mcmc.6)
-print(mcg.6)
+mcg.10 <- mcgibbsit(mcmc.10)
+print(mcg.10)
 ```
 
-**Interpretation**:  `mcgibbsit` estimated that a total of required number of samples is `r nformat(max(mcg.6$resmatrix[,"Total"]))`, and since we we have already generated `r nformat(mcg.6$nchains * mcg.6$len)` samples across the 6 runs, we do not need to perform any additional runs of our MCMC sampler.
+**Interpretation**: `mcgibbsit` now estimates that a total of required number of samples is `r nformat(max(mcg.10$resmatrix[,"Total"]))` (this is slightly fewer than before because the the larger number of samples allowed more accurate estimates of the variances and correlations).  Since we we have already generated `r nformat(mcg.10$nchains * mcg.10$len)` samples, we do not need to perform any additional runs of our MCMC sampler.
+
+We can now calculate the posterior confidence regions for each of the parameters.
+
+```{r}
+summary(mcmc.10)
+```
+

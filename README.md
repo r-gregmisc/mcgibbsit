@@ -38,11 +38,9 @@ remotes::install_github('r-gregmisc/mcgibbsit')
 
 ## Example
 
-This basic example constructs a dummy set of files for 20 MCMC runs from
-an *imaginary* MCMC sampler and shows the results of running `mcgibbsit`
-with the default settings, which calculate the total number of samples
-needed to provide accurate 95% posterior confidence region estimates for
-all four of the parameters.
+This basic example constructs a dummy set of files from an *imaginary*
+MCMC sampler and shows the results of running `mcgibbsit` with the
+default settings.
 
 ``` r
 library(mcgibbsit)
@@ -50,7 +48,6 @@ library(mcgibbsit)
 
 ###
 # Create example data files for 20 independent chains
-# with serial correlation of 0.25
 ###
 
 set.seed(42)
@@ -64,20 +61,24 @@ gen_samples <- function(run_id)
   x <- matrix(nrow = nsamples+1, ncol=4)
   colnames(x) <- c("alpha","beta","gamma", "nu")
   
-  x[,"alpha"] <- rnorm (nsamples+1, mean=0.025, sd=0.0025)^2
-  x[,"beta"]  <- rnorm (nsamples+1, mean=53,    sd=12)
-  x[,"gamma"] <- rbinom(nsamples+1, 20,         p=0.25) + 1
+  x[,"alpha"] <- exp(rnorm (nsamples+1, mean=0.025, sd=0.025))
+  x[,"beta"]  <- rnorm (nsamples+1, mean=53,    sd=14)
+  x[,"gamma"] <- rbinom(nsamples+1, 20,         p=0.15) + 1
   x[,"nu"]    <- rnorm (nsamples+1, mean=x[,"alpha"] * x[,"beta"], sd=1/x[,"gamma"])
 #'
   # induce serial correlation of 0.25
   x <- 0.75 * x[2:(nsamples+1),] + 0.25 * x[1:nsamples,]
-  
-  
+
+  # induce ~50% acceptance rate
+  accept <- runif(nsamples) > 0.50
+  for(i in 2:nsamples)
+    if(!accept[i]) x[i,] <- x[i-1,]
+
   write.table(
     x,
     file = file.path(
       tmpdir,
-      paste("mcmc", i, "csv", sep=".")
+      paste("mcmc", run_id, "csv", sep=".")
       ),
     sep = ",",
     row.names = FALSE
@@ -107,7 +108,9 @@ plot(mcmc.3)
 
 <img src="man/figures/README-trace_density_plot_3-1.png" width="100%" />
 
-Now run `mcgibbsit` to determine the necessary number of MCMC samples:
+Now run `mcgibbsit` to determine the necessary total number of MCMC
+samples to to provide accurate 95% posterior confidence region estimates
+for all four of the parameters:
 
 ``` r
 # And check the necessary run length 
@@ -130,30 +133,30 @@ print(mcg.3)
 #>       Burn-in  Estimation Total Lower bound  Auto-Corr. Between-Chain   
 #>       (M)      (N)        (M+N) (Nmin)       factor (I) Corr. factor (R)
 #>                                                                         
-#> alpha 12       823        835   600          1.27       1.090           
-#> beta  6        548        554   600          0.96       0.953           
-#> gamma 9        660        669   600          1.16       0.951           
-#> nu    12       725        737   600          1.27       0.957           
+#> alpha 24       1301       1325  600          2.28       0.955           
+#> beta  33       1830       1863  600          3.22       0.951           
+#> gamma 27       1932       1959  600          2.74       1.180           
+#> nu    33       1849       1882  600          3.22       0.961           
 #>       -----    -----      ----- -----        -----      -----           
-#>       12       823        835                                           
+#>       33       1932       1965                                          
 #> 
 #> NOTE: The values for M, N, and Total are combined numbers of iterations 
 #>       based on using 3 chains.
 ```
 
 **Interpretation**: `mcgibbsit` estimated that a total of required
-number of samples is 835, which is less than we’ve generated so far.
+number of samples is 1,959, which is less than we’ve generated so far.
 
-Just to be safe we’ll add 3 more runs for a total of 6 runs, each of
-length 200, for a total of 1,200 samples
+Just to be safe we’ll add 7 more runs, each of length 200, for a total
+of 2,000 samples:
 
 ``` r
-# Generate and load 3 runs 
-for(i in 4:6)
+# Generate and load 7 more runs 
+for(i in 3 + (1:7))
   gen_samples(i)
   
-mcmc.6 <- read.mcmc(
-  6, 
+mcmc.10 <- read.mcmc(
+  10, 
   file.path(tmpdir, "mcmc.#.csv"), 
   sep=",",
   col.names=c("alpha","beta","gamma", "nu")
@@ -162,25 +165,25 @@ mcmc.6 <- read.mcmc(
 
 ``` r
 # Trace and Density Plots
-plot(mcmc.6)
+plot(mcmc.10)
 ```
 
-<img src="man/figures/README-trace_density_plot_6-1.png" width="100%" />
+<img src="man/figures/README-trace_density_plot_10-1.png" width="100%" />
 
 Now run `mcgibbsit` to determine the necessary number of MCMC samples:
 
 ``` r
 # And check the necessary run length 
-mcg.6 <- mcgibbsit(mcmc.6)
-print(mcg.6)
+mcg.10 <- mcgibbsit(mcmc.10)
+print(mcg.10)
 #>                   Multi-Chain Gibbsit 
 #>                   ------------------- 
 #> 
-#> Call             = mcgibbsit(data = mcmc.6)
+#> Call             = mcgibbsit(data = mcmc.10)
 #> 
-#> Number of Chains = 6 
+#> Number of Chains = 10 
 #> Per-Chain Length = 200 
-#> Total Length     = 1200 
+#> Total Length     = 2000 
 #> 
 #> Quantile (q)     = 0.025 
 #> Accuracy (r)     = +/- 0.0125 
@@ -190,18 +193,49 @@ print(mcg.6)
 #>       Burn-in  Estimation Total Lower bound  Auto-Corr. Between-Chain   
 #>       (M)      (N)        (M+N) (Nmin)       factor (I) Corr. factor (R)
 #>                                                                         
-#> alpha 24       662        686   600          1.27       0.874           
-#> beta  24       881        905   600          1.36       1.090           
-#> gamma 18       862        880   600          1.46       0.988           
-#> nu    12       525        537   600          0.998      0.878           
+#> alpha 90       1534       1624  600          2.76       0.933           
+#> beta  110      1743       1853  600          3.11       0.940           
+#> gamma 90       1820       1910  600          3.19       0.955           
+#> nu    100      1569       1669  600          2.79       0.942           
 #>       -----    -----      ----- -----        -----      -----           
-#>       24       881        905                                           
+#>       110      1820       1930                                          
 #> 
 #> NOTE: The values for M, N, and Total are combined numbers of iterations 
-#>       based on using 6 chains.
+#>       based on using 10 chains.
 ```
 
-**Interpretation**: `mcgibbsit` estimated that a total of required
-number of samples is 905, and since we we have already generated 1,200
-samples across the 6 runs, we do not need to perform any additional runs
-of our MCMC sampler.
+**Interpretation**: `mcgibbsit` now estimates that a total of required
+number of samples is 1,910 (this is slightly fewer than before because
+the the larger number of samples allowed more accurate estimates of the
+variances and correlations). Since we we have already generated 2,000
+samples, we do not need to perform any additional runs of our MCMC
+sampler.
+
+We can now calculate the posterior confidence regions for each of the
+parameters.
+
+``` r
+summary(mcmc.10)
+#> 
+#> Iterations = 1:200
+#> Thinning interval = 1 
+#> Number of chains = 10 
+#> Sample size per chain = 200 
+#> 
+#> 1. Empirical mean and standard deviation for each variable,
+#>    plus standard error of the mean:
+#> 
+#>         Mean       SD  Naive SE Time-series SE
+#> alpha  1.026  0.02033 0.0004546       0.000787
+#> beta  53.012 11.10534 0.2483230       0.433342
+#> gamma  4.024  1.24685 0.0278804       0.046729
+#> nu    54.391 11.50530 0.2572663       0.438652
+#> 
+#> 2. Quantiles for each variable:
+#> 
+#>          2.5%    25%    50%    75% 97.5%
+#> alpha  0.9892  1.012  1.025  1.039  1.07
+#> beta  31.1137 45.587 52.633 60.664 73.74
+#> gamma  1.7500  3.000  4.000  4.750  6.75
+#> nu    32.3646 46.484 54.455 61.896 76.44
+```
