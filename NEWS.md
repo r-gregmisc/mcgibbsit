@@ -4,7 +4,11 @@
 
 ## Version Summaries
 
-### Version 1.2.3 - 2023-09-24
+### Version 1.2.2 - 2023-09-24
+
+-   Minor changes to DESCRIPTION per CRAN maintainer request.
+
+### Version 1.2.1 - 2023-09-23
 
 -   Update to meet current CRAN requirements.
 
@@ -32,9 +36,7 @@ Bug Fixes
 
 ------------
 
-## Detailed Changes
-
-### Git Log (2012 - Present)
+## Detailed Changes from Git (2012 - Present)
 
 commit d7c801aeb6b67d39b9d868c274a5ac0b569562a9   
  Author: Gregory R. Warnes [greg\@warnes.net](mailto:greg@warnes.net){.email}   
@@ -143,7 +145,7 @@ commit fde41b7718349b7b8a810111a0af2a27becbf5d5
 * version 1.1.0
 
 
-### SVN Log (2003 - 2011)
+## Detailed Changes from SVN (2003 - 2011)
 
 2011-08-26 warnes
 
