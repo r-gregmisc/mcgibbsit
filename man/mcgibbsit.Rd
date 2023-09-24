@@ -147,12 +147,12 @@ mcgibbsit(data)
 \references{
 Warnes, G.W. (2004). The Normal Kernel Coupler: An adaptive MCMC method for
 efficiently sampling from multi-modal distributions,
-\url{https://digital.lib.washington.edu/researchworks/handle/1773/9541}
+\url{https://stat.uw.edu/sites/default/files/files/reports/2001/tr395.pdf}
 
 Warnes, G.W. (2000).  Multi-Chain and Parallel Algorithms for Markov Chain
 Monte Carlo. Dissertation, Department of Biostatistics, University of
 Washington,
-\url{https://stat.uw.edu/sites/default/files/files/reports/2001/tr395.pdf}
+\url{https://digital.lib.washington.edu/researchworks/handle/1773/9541}
 
 Raftery, A.E. and Lewis, S.M. (1992).  One long run with diagnostics:
 Implementation strategies for Markov chain Monte Carlo. Statistical Science,
