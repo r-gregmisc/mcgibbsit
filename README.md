@@ -11,8 +11,9 @@ status](https://www.r-pkg.org/badges/version/mcgibbsit)](https://CRAN.R-project.
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 <!-- badges: end -->
 
-Implementation of Warnes & Raftery’s MCGibbsit run-length diagnostic for
-a set of (not-necessarily independent) MCMC samplers.
+Implementation of Warnes & Raftery’s `MCGibbsit` run-length diagnostic
+for a set of (not-necessarily independent) Markov Chain Monte Carlo
+(MCMC) samplers.
 
 It combines the estimate error-bounding approach of the Raftery and
 Lewis MCMC run length diagnostic (`gibbsit`) with the between verses
@@ -36,6 +37,41 @@ if(!require("remotes"))
 remotes::install_github('r-gregmisc/mcgibbsit')
 ```
 
+``` r
+library(mcgibbsit)
+#> Loading required package: coda
+
+set.seed(42)        # for reproducibility
+tmpdir <- tempdir()
+```
+
+The `mcgibbsit` package provides an implementation of Warnes & Raftery’s
+MCGibbsit run-length diagnostic for a set of (not-necessarily
+independent) MCMC samplers. It combines the estimate error-bounding
+approach of Raftery and Lewis with the between chain variance verses
+within chain variance approach of Gelman and Rubin.
+
+`mcgibbsit` computes the minimum run length $N_{min}$, required burn in
+$M$, total run length $N$, run length inflation due to
+*auto-correlation*, $I$, and the run length inflation due to
+*between-chain* correlation, $R$ for a set of exchangeable MCMC
+simulations which need not be independent.
+
+The normal usage is to perform an initial MCMC run of some
+pre-determined length (e.g. 300 iterations) for each of a set of $k$
+(e.g. 20) MCMC samplers. The output from these samplers is then read in
+to create an `mcmc.list` object and `mcgibbsit` is run specifying the
+desired accuracy of estimation for quantiles of interest. This will
+return the minimum number of iterations to achieve the specified error
+bound. The set of MCMC samplers is now run so that the total number of
+iterations exceeds this minimum, and `mcgibbsit` is again called. This
+should continue until the number of iterations already complete is less
+than the minimum number computed by `mcgibbsit`.
+
+If the initial number of iterations in `data` is too small to perform
+the calculations, an error message is printed indicating the minimum
+pilot run length.
+
 ## Example
 
 This basic example constructs a dummy set of files from an *imaginary*
@@ -43,20 +79,8 @@ MCMC sampler and shows the results of running `mcgibbsit` with the
 default settings.
 
 ``` r
-library(mcgibbsit)
-#> Loading required package: coda
-
-###
-# Create example data files for 20 independent chains
-###
-
-set.seed(42)
-tmpdir <- tempdir()
-
-nsamples <- 200
-
 # Define a function to generate the output of our imaginary MCMC sampler
-gen_samples <- function(run_id)
+gen_samples <- function(run_id, nsamples=200)
 {
   x <- matrix(nrow = nsamples+1, ncol=4)
   colnames(x) <- c("alpha","beta","gamma", "nu")
@@ -91,7 +115,7 @@ First, we’ll generate and load only a 3 runs of length 200:
 ``` r
 # Generate and load 3 runs 
 for(i in 1:3)
-  gen_samples(i)
+  gen_samples(i, 200)
   
 mcmc.3 <- read.mcmc(
   3, 
@@ -138,22 +162,22 @@ print(mcg.3)
 #> gamma 27       1932       1959  600          2.74       1.180           
 #> nu    33       1849       1882  600          3.22       0.961           
 #>       -----    -----      ----- -----        -----      -----           
-#>       33       1932       1965                                          
+#>       33       1932       1959  600                                     
 #> 
 #> NOTE: The values for M, N, and Total are combined numbers of iterations 
 #>       based on using 3 chains.
 ```
 
-**Interpretation**: `mcgibbsit` estimated that a total of required
-number of samples is 1,959, which is less than we’ve generated so far.
+The results from `mcgibbsit` indicate that the required number of
+samples is 1,959, which is less than we’ve generated so far.
 
-Just to be safe we’ll add 7 more runs, each of length 200, for a total
-of 2,000 samples:
+Lets generate 7 more runs, each of length 200, for a total of 2,000
+samples:
 
 ``` r
 # Generate and load 7 more runs 
 for(i in 3 + (1:7))
-  gen_samples(i)
+  gen_samples(i, 200)
   
 mcmc.10 <- read.mcmc(
   10, 
@@ -198,18 +222,17 @@ print(mcg.10)
 #> gamma 90       1820       1910  600          3.19       0.955           
 #> nu    100      1569       1669  600          2.79       0.942           
 #>       -----    -----      ----- -----        -----      -----           
-#>       110      1820       1930                                          
+#>       110      1820       1910  600                                     
 #> 
 #> NOTE: The values for M, N, and Total are combined numbers of iterations 
 #>       based on using 10 chains.
 ```
 
-**Interpretation**: `mcgibbsit` now estimates that a total of required
-number of samples is 1,910 (this is slightly fewer than before because
-the the larger number of samples allowed more accurate estimates of the
-variances and correlations). Since we we have already generated 2,000
-samples, we do not need to perform any additional runs of our MCMC
-sampler.
+`mcgibbsit` now estimates that a total of required number of samples is
+1,910 (this is slightly fewer than before because the the larger number
+of samples allowed more accurate estimates of the variances and
+correlations). Since we we have already generated 2,000 samples, we do
+not need to perform any additional runs.
 
 We can now calculate the posterior confidence regions for each of the
 parameters.

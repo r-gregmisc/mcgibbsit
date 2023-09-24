@@ -44,15 +44,8 @@ An \code{mcgibbsit} object with components
 s, and q used} \item{resmatrix}{a matrix with 6 columns: \describe{
 \item{Nmin}{The minimum required sample size for a chain with no correlation
 between consecutive samples. Positive autocorrelation will increase the
-required sample size above this minimum value.} \item{M}{The number of `burn
-in' iterations to be discarded (total over all chains).} \item{N}{The number
-of iterations after burn in required to estimate the quantile q to within an
-accuracy of +/- r with probability p (total over all chains).}
-\item{Total}{Overall number of iterations required (M + N).} \item{I}{An
-estimate (the `dependence factor') of the extent to which auto-correlation
-inflates the required sample size.  Values of `I' larger than 5 indicate
-strong autocorrelation which may be due to a poor choice of starting value,
-high posterior correlations, or `stickiness' of the MCMC algorithm.}
+required sample size above this minimum value.} \item{M}{The number of \verb{burn in' iterations to be discarded (total over all chains).\} \\item\{N\}\{The number of iterations after burn in required to estimate the quantile q to within an accuracy of +/- r with probability p (total over all chains).\} \\item\{Total\}\{Overall number of iterations required (M + N).\} \\item\{I\}\{An estimate (the }dependence factor') of the extent to which auto-correlation
+inflates the required sample size.  Values of \verb{I' larger than 5 indicate strong autocorrelation which may be due to a poor choice of starting value, high posterior correlations, or }stickiness' of the MCMC algorithm.}
 \item{R}{An estimate of the extent to which between-chain correlation
 inflates the required sample size.  Large values of 'R' indicate that there
 is significant correlation between the chains and may be indicative of a
@@ -60,7 +53,7 @@ lack of convergence or a poor multi-chain algorithm.} } } \item{nchains}{the
 number of MCMC chains in the data} \item{len}{the length of each chain}
 }
 \description{
-mcgibbsit provides an implementation of Warnes & Raftery's MCGibbsit
+\code{mcgibbsit} provides an implementation of Warnes & Raftery's MCGibbsit
 run-length diagnostic for a set of (not-necessarily independent) MCMC
 samplers.  It combines the estimate error-bounding approach of Raftery and
 Lewis with the between chain variance verses within chain variance approach

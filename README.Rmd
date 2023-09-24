@@ -24,12 +24,11 @@ nformat <- function(x)
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 <!-- badges: end -->
 
-Implementation of Warnes & Raftery's MCGibbsit run-length diagnostic
-for a set of (not-necessarily independent) MCMC samplers.  
+Implementation of Warnes & Raftery's `MCGibbsit` run-length diagnostic
+for a set of (not-necessarily independent) Markov Chain Monte Carlo (MCMC) samplers.  
 
 It combines the estimate error-bounding approach of the Raftery and Lewis MCMC
-run length diagnostic (`gibbsit`) with the between verses within chain approach of
-the Gelman and Rubin MCMC convergence diagnostic.
+run length diagnostic (`gibbsit`) with the between verses within chain approach of the Gelman and Rubin MCMC convergence diagnostic.
 
 ## Installation
 
@@ -46,114 +45,5 @@ if(!require("remotes"))
 remotes::install_github('r-gregmisc/mcgibbsit')
 ```
 
-## Example
-
-This basic example constructs a dummy set of files from an *imaginary* MCMC sampler and shows the results of running `mcgibbsit` with the default settings.
-
-```{r}
-library(mcgibbsit)
-
-###
-# Create example data files for 20 independent chains
-###
-
-set.seed(42)
-tmpdir <- tempdir()
-
-nsamples <- 200
-
-# Define a function to generate the output of our imaginary MCMC sampler
-gen_samples <- function(run_id)
-{
-  x <- matrix(nrow = nsamples+1, ncol=4)
-  colnames(x) <- c("alpha","beta","gamma", "nu")
-  
-  x[,"alpha"] <- exp(rnorm (nsamples+1, mean=0.025, sd=0.025))
-  x[,"beta"]  <- rnorm (nsamples+1, mean=53,    sd=14)
-  x[,"gamma"] <- rbinom(nsamples+1, 20,         p=0.15) + 1
-  x[,"nu"]    <- rnorm (nsamples+1, mean=x[,"alpha"] * x[,"beta"], sd=1/x[,"gamma"])
-#'
-  # induce serial correlation of 0.25
-  x <- 0.75 * x[2:(nsamples+1),] + 0.25 * x[1:nsamples,]
-
-  # induce ~50% acceptance rate
-  accept <- runif(nsamples) > 0.50
-  for(i in 2:nsamples)
-    if(!accept[i]) x[i,] <- x[i-1,]
-
-  write.table(
-    x,
-    file = file.path(
-      tmpdir,
-      paste("mcmc", run_id, "csv", sep=".")
-      ),
-    sep = ",",
-    row.names = FALSE
-  )
-}
+```{r, child='vignettes/mcgibbsit_example.Rmd'}
 ```
-
-First, we'll generate and load only a 3 runs of length 200:
-
-```{r}
-# Generate and load 3 runs 
-for(i in 1:3)
-  gen_samples(i)
-  
-mcmc.3 <- read.mcmc(
-  3, 
-  file.path(tmpdir, "mcmc.#.csv"), 
-  sep=",",
-  col.names=c("alpha","beta","gamma", "nu")
-  )
-```
-
-```{r trace_density_plot_3,fig.width=8,fig.height=8}
-# Trace and Density Plots
-plot(mcmc.3)
-```
-
-Now run `mcgibbsit` to determine the necessary total number of MCMC samples to to provide accurate 95% posterior confidence region estimates for all four of the parameters:
-```{r}
-# And check the necessary run length 
-mcg.3 <- mcgibbsit(mcmc.3)
-print(mcg.3)
-```
-
-**Interpretation**: `mcgibbsit` estimated that a total of required number of samples is `r nformat(max(mcg.3$resmatrix[,"Total"]))`, which is less than we've generated so far.
-
-Just to be safe we'll add 7 more runs, each of length 200, for a total of  2,000 samples:
-
-```{r}
-# Generate and load 7 more runs 
-for(i in 3 + (1:7))
-  gen_samples(i)
-  
-mcmc.10 <- read.mcmc(
-  10, 
-  file.path(tmpdir, "mcmc.#.csv"), 
-  sep=",",
-  col.names=c("alpha","beta","gamma", "nu")
-  )
-```
-
-```{r trace_density_plot_10,fig.width=8,fig.height=8}
-# Trace and Density Plots
-plot(mcmc.10)
-```
-
-Now run `mcgibbsit` to determine the necessary number of MCMC samples:
-```{r}
-# And check the necessary run length 
-mcg.10 <- mcgibbsit(mcmc.10)
-print(mcg.10)
-```
-
-**Interpretation**: `mcgibbsit` now estimates that a total of required number of samples is `r nformat(max(mcg.10$resmatrix[,"Total"]))` (this is slightly fewer than before because the the larger number of samples allowed more accurate estimates of the variances and correlations).  Since we we have already generated `r nformat(mcg.10$nchains * mcg.10$len)` samples, we do not need to perform any additional runs of our MCMC sampler.
-
-We can now calculate the posterior confidence regions for each of the parameters.
-
-```{r}
-summary(mcmc.10)
-```
-

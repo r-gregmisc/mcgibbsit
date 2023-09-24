@@ -31,7 +31,7 @@ sampler data.}
 }
 \value{
 An mcmc.list object containing \code{nc} component \code{mcmc}
-  objects.
+objects.
 }
 \description{
 Read in data from a set of MCMC runs and create an \code{mcmc.list} object.
@@ -84,7 +84,7 @@ summary(data)
 }
 \seealso{
 \code{\link[coda]{mcmc}}, \code{\link[coda]{mcmc.list}},
-  \code{\link[utils]{read.table}}
+\code{\link[utils]{read.table}}
 }
 \author{
 Gregory R. Warnes \email{greg@warnes.net}

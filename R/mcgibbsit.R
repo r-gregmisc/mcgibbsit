@@ -1,6 +1,6 @@
 #' Warnes and Raftery's MCGibbsit MCMC diagnostic
 #' 
-#' mcgibbsit provides an implementation of Warnes & Raftery's MCGibbsit
+#' `mcgibbsit` provides an implementation of Warnes & Raftery's MCGibbsit
 #' run-length diagnostic for a set of (not-necessarily independent) MCMC
 #' samplers.  It combines the estimate error-bounding approach of Raftery and
 #' Lewis with the between chain variance verses within chain variance approach
