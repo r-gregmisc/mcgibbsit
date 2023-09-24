@@ -6,3 +6,4 @@
 .gitignore
 ^CRAN-SUBMISSION$
 ^cran-comments\.md$
+^README\.Rmd$

@@ -144,7 +144,7 @@ data <- read.mcmc(
 summary(data)
 
 # Trace and Density Plots
- plot(data)
+plot(data)
 
 # And check the necessary run length 
 mcgibbsit(data)
