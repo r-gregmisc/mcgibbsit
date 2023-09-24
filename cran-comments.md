@@ -1,41 +1,51 @@
-## R CMD check results
+## Current Submission (1.2.2):
 
-0 errors \| 0 warnings \| 1 note
+-   Local R CMD check results
 
--   This is a new release.
+    0 errors \| 0 warnings \| 0 note
 
--   Two NOTE is present under `R devel` on all three of Windows, MacOS, and Ubuntu Linux (via R-Hub builder):
+-   This is a resubmission of `mcgibbsit` with back quotes(\`\`) changed to single quotes ('') in the DESCRIPTION title field as requested by Uwe Ligges.
 
-    1.  `Package was archived on CRAN`: This submission resolves all of the issues listed on the the CRAN package check page (<https://cran-archive.r-project.org/web/checks/2022/2022-06-23_check_results_mcgibbsit.html>).
+## Previous Submission (1.2.1):
 
-    2.  `Possibly misspelled words in DESCRIPTION`: All of these are author or method names.
+-   Local R CMD check results
 
--   The R-Hub builder reports some NOTEs that appear to be issues with the particular R installation, rather than with the `mcgibbsit` package itself.
+    0 errors \| 0 warnings \| 0 note
 
-    -   Windows:
+-   R-Hub builder R CMD check results:
 
-```         
-* checking for non-standard things in the check directory ... NOTE
-Skipping checking math rendering: package 'V8' unavailable
-Found the following files/directories:
-  ''NULL''
-* checking for detritus in the temp directory ... NOTE
-Found the following files/directories:
-  'lastMiKTeXException'
-```
+    -   Two NOTEs are present under `R devel` on all three of Windows, MacOS, and Ubuntu Linux
 
--   MacOs and Ubuntu:
+        1.  `Package was archived on CRAN`: This submission resolves all of the issues listed on the the CRAN package check page (<https://cran-archive.r-project.org/web/checks/2022/2022-06-23_check_results_mcgibbsit.html>).
 
-```         
-Found the following (possibly) invalid URLs:
-  URL: https://stat.uw.edu/sites/default/files/files/reports/2001/tr395.pdf
-    From: man/mcgibbsit.Rd
-    Status: Error
-    Message: libcurl error code 60:
-        SSL certificate problem: unable to get local issuer certificate
-        (Status without verification: OK)
+        2.  `Possibly misspelled words in DESCRIPTION`: All of these are author or method names.
+
+    -   The R-Hub builder reports some NOTEs that appear to be issues with the particular R installation, rather than with the `mcgibbsit` package itself.
+
+        -   Windows:
         
-* checking HTML version of manual ... NOTE
-Skipping checking HTML validation: no command 'tidy' found
-Skipping checking math rendering: package 'V8' unavailable
-```
+            ```         
+            * checking for non-standard things in the check directory ... NOTE
+            Skipping checking math rendering: package 'V8' unavailable
+            Found the following files/directories:
+              ''NULL''
+            * checking for detritus in the temp directory ... NOTE
+            Found the following files/directories:
+              'lastMiKTeXException'
+            ```
+
+        -   MacOs and Ubuntu:
+
+            ```         
+            Found the following (possibly) invalid URLs:
+              URL: https://stat.uw.edu/sites/default/files/files/reports/2001/tr395.pdf
+                From: man/mcgibbsit.Rd
+                Status: Error
+                Message: libcurl error code 60:
+                    SSL certificate problem: unable to get local issuer certificate
+                    (Status without verification: OK)
+                    
+            * checking HTML version of manual ... NOTE
+            Skipping checking HTML validation: no command 'tidy' found
+            Skipping checking math rendering: package 'V8' unavailable
+            ```
